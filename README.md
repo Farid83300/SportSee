@@ -19,6 +19,7 @@ SportSee est conçu pour aider les utilisateurs à suivre leurs progrès en mati
 - Définition d'objectifs et suivi des progrès
 
 ## Technologies
+- TypeScript
 - SASS
 - React / Vite
 - React Router
@@ -33,16 +34,15 @@ Pour configurer le projet localement, suivez ces étapes :
     ```
 2. Accédez au répertoire du frontend :
     ```bash
-    cd frontend
+    cd ../frontend
     ```
 3. Installez les dépendances du frontend :
     ```bash
-    npm install -g yarn
-    yarn install
+    npm install
     ```
 4. Accédez au répertoire du backend :
     ```bash
-    cd backend
+    cd ../backend
     ```
 5. Installez les dépendances du backend :
     ```bash
@@ -53,7 +53,7 @@ Pour configurer le projet localement, suivez ces étapes :
 ### Démarrer le serveur Frontend
 Pour démarrer le serveur Frontend, exécutez la commande suivante :
 ```bash
-yarn dev
+npm run dev
 ```
 Ouvrez votre navigateur et accédez à http://localhost:5173 pour voir l'application.
 
