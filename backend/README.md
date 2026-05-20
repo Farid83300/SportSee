@@ -11,7 +11,7 @@ To start this project, you are free to use Docker or not. In this documentation,
 ### 2.1 Prerequisites
 
 - [NodeJS (**version 12.18**)](https://nodejs.org/en/) or higher (tested up to Node 20.0)
-- [Yarn](https://yarnpkg.com/)
+- [npm](https://www.npmjs.com/) (included with NodeJS)
 
 If you are working with several versions of NodeJS, we recommend you install [nvm](https://github.com/nvm-sh/nvm). This tool will allow you to easily manage your NodeJS versions.
 
@@ -19,8 +19,8 @@ If you are working with several versions of NodeJS, we recommend you install [nv
 
 - Fork the repository
 - Clone it on your computer.
-- The `yarn` command will allow you to install the dependencies.
-- The `yarn dev` command will allow you to run the micro API.
+- The `npm install` command will allow you to install the dependencies.
+- The `npm run dev` command will allow you to run the micro API.
 
 ## 3. Project (**with Docker**)
 
@@ -31,7 +31,7 @@ If you are working with several versions of NodeJS, we recommend you install [nv
 ### 2.2 Starting the project
 
 - The `docker image build --no-cache -t micro-api .` command will allow you to build your image.
-- The `docker container run --name micro-api -p 8000:8000 -dt micro-api yarn` command will allow you to create your Docker container and run your image on port 8000.
+- The `docker container run --name micro-api -p 8000:8000 -dt micro-api npm` command will allow you to create your Docker container and run your image on port 8000.
 - The `docker container stop micro-api` command will allow you to stop your micro-api.
 - The `docker container rm micro-api` command will allow you to delete your micro-api container.
 
@@ -41,7 +41,7 @@ Finally, if you have VsCode, you can easily launch your project in a docker envi
 
 You will need the [Remote Development extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack). Once you have this extension installed, just click on the `Reopen in Container` button.
 
-Once in the container, run the `yarn dev` command.
+Once in the container, run the `npm run dev` command.
 
 ## 4. Authentication
 
