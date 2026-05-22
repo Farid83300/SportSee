@@ -10,11 +10,8 @@ export default [
 
   // Routes protégées — nécessitent une authentification
   layout("components/ProtectedRoute.tsx", [
-    // Page d'accueil → redirige vers /dashboard
-    index("routes/home.tsx"),
-
-    // Dashboard principal
-    route("dashboard", "routes/dashboard.tsx"),
+    index("routes/dashboard.tsx"),
+    route("profile", "routes/profile.tsx"),
   ]),
 
   // Gestion des routes inexistantes (404)

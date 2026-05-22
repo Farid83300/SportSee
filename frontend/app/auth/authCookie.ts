@@ -13,12 +13,14 @@ const COOKIE_EXPIRY_DAYS = 1;
 // ---------------------------------------------------------------------------
 
 function setCookie(name: string, value: string, days: number): void {
+  if (typeof document === "undefined") return;
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
   document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
 }
 
 function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
   const cookies = document.cookie.split(";");
   for (const cookie of cookies) {
     const [key, value] = cookie.trim().split("=");
@@ -28,6 +30,7 @@ function getCookie(name: string): string | null {
 }
 
 function deleteCookie(name: string): void {
+  if (typeof document === "undefined") return;
   document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
 }
 
@@ -47,9 +50,8 @@ export function getToken(): string | null {
 }
 
 /** Récupère le userId stocké, ou null si absent */
-export function getUserId(): number | null {
-  const id = getCookie(USER_ID_KEY);
-  return id ? parseInt(id, 10) : null;
+export function getUserId(): string | null {
+  return getCookie(USER_ID_KEY);
 }
 
 /** Vérifie si l'utilisateur est connecté */

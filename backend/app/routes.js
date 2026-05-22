@@ -39,9 +39,9 @@ router.post("/api/login", (req, res) => {
   });
 });
 
-/** ✅
- * GET /api/user-info
- * Returns user information including profile, goals, and statistics
+/**
+ * GET /api/user-info ✅
+ * Returns user information including profile, weeklyGoal, weeklyScore and statistics
  */
 router.get("/api/user-info", authenticateToken, (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
@@ -50,14 +50,33 @@ router.get("/api/user-info", authenticateToken, (req, res) => {
   const runningData = user.runningData;
 
   // Calculate overall statistics
-  const totalDistance = runningData.reduce(
-    (sum, session) => sum + session.distance,
-    0
-  ).toFixed(1);
+  const totalDistance = runningData
+    .reduce((sum, session) => sum + session.distance, 0)
+    .toFixed(1);
   const totalSessions = runningData.length;
   const totalDuration = runningData.reduce(
     (sum, session) => sum + session.duration,
     0
+  );
+
+  // Calculate weekly score for Pie chart
+  // Get start of current week (Monday)
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday...
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  startOfWeek.setDate(now.getDate() + diffToMonday);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const sessionsThisWeek = runningData.filter((session) => {
+    const sessionDate = new Date(session.date);
+    return sessionDate >= startOfWeek && sessionDate <= now;
+  }).length;
+
+  // Weekly score = sessions done / goal (capped at 100%)
+  const weeklyScore = Math.min(
+    Math.round((sessionsThisWeek / user.weeklyGoal) * 100),
+    100
   );
 
   // Extract user profile information
@@ -73,6 +92,8 @@ router.get("/api/user-info", authenticateToken, (req, res) => {
 
   return res.json({
     profile: userProfile,
+    weeklyGoal: user.weeklyGoal,  // ex: 2 (séances/semaine)
+    weeklyScore,                   // ex: 50 (% pour le Pie chart)
     statistics: {
       totalDistance,
       totalSessions,
@@ -82,14 +103,17 @@ router.get("/api/user-info", authenticateToken, (req, res) => {
 });
 
 /**
- * GET /api/user-activity
+ * GET /api/user-activity ✅
  * Returns running sessions between startWeek and endWeek
+ * ⚠️  Dates futures exclues automatiquement
  */
 router.get("/api/user-activity", authenticateToken, (req, res) => {
   const { startWeek, endWeek } = req.query;
-  
+
   if (!startWeek || !endWeek) {
-    return res.status(400).json({ message: "startWeek and endWeek are required" });
+    return res
+      .status(400)
+      .json({ message: "startWeek and endWeek are required" });
   }
 
   const user = getUserById(req.user.userId);
@@ -103,7 +127,7 @@ router.get("/api/user-activity", authenticateToken, (req, res) => {
   const startDate = new Date(startWeek);
   const endDate = new Date(endWeek);
   const now = new Date();
-  
+
   // Filter sessions between startWeek and endWeek, excluding future dates
   const filteredSessions = runningData.filter((session) => {
     const sessionDate = new Date(session.date);
@@ -111,8 +135,8 @@ router.get("/api/user-activity", authenticateToken, (req, res) => {
   });
 
   // Sort by date ascending
-  const sortedSessions = filteredSessions.sort((a, b) => 
-    new Date(a.date) - new Date(b.date)
+  const sortedSessions = filteredSessions.sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
   );
 
   return res.json(sortedSessions);
