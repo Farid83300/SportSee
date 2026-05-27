@@ -3,6 +3,7 @@
 /* ============================================================================
    SPORTSEE — Styles globaux
    Palette extraite de la maquette Figma
+   Lisibilité garantie à partir de 1024x768px
    ============================================================================ */
 
 :root {
@@ -49,6 +50,7 @@
 
 html, body, #root {
   height: 100%;
+  min-width: 1024px; /* ← lisibilité garantie à partir de 1024px */
 }
 
 body {
@@ -109,6 +111,7 @@ a:hover {
   flex: 1;
   padding: 2rem;
   max-width: 1200px;
+  min-width: 1024px; /* ← largeur minimale du contenu */
   margin: 0 auto;
   width: 100%;
 }
@@ -128,6 +131,7 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 100;
+  min-width: 1024px; /* ← navbar cohérente avec le reste */
 }
 
 .navbar-logo {
@@ -290,6 +294,7 @@ a:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: 100vh;
+  min-width: 1024px; /* ← cohérent avec le reste */
   background-color: var(--color-bg);
 }
 
@@ -297,10 +302,15 @@ a:hover {
   display: flex;
   flex-direction: column;
   padding: 2rem 3rem;
+  justify-content: center;
+  align-items: center; /* ← centre horizontalement */
 }
 
 .login-logo {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem; /* ← réduit de 3rem à 2rem */
+  position: absolute; /* ← logo en haut à gauche */
+  top: 2rem;
+  left: 3rem;
 }
 
 .login-card {
@@ -325,6 +335,7 @@ a:hover {
 .login-right {
   position: relative;
   overflow: hidden;
+  height: 100vh;
 }
 
 .login-right img {
@@ -677,6 +688,7 @@ a:hover {
   font-size: 0.8rem;
   color: var(--color-text-muted);
   border-top: 1px solid #E0E0E0;
+  min-width: 1024px; /* ← cohérent avec le reste */
 }
 
 .footer-links {

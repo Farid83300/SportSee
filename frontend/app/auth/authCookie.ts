@@ -39,7 +39,7 @@ function deleteCookie(name: string): void {
 // ---------------------------------------------------------------------------
 
 /** Sauvegarde le token et le userId après login */
-export function saveAuth(token: string, userId: number): void {
+export function saveAuth(token: string, userId: string): void {
   setCookie(TOKEN_KEY, token, COOKIE_EXPIRY_DAYS);
   setCookie(USER_ID_KEY, String(userId), COOKIE_EXPIRY_DAYS);
 }

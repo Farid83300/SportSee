@@ -4,21 +4,26 @@
 // =============================================================================
 
 import { useNavigate } from "react-router";
-import { clearAuth, getUserId } from "../auth/authCookie";
+import { clearAuth } from "../auth/authCookie";
+import { useAppContext } from "../context/useAppContext"; // ← ajouter
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const userId = getUserId();
+  const { userInfo, isLoading, error } = useAppContext(); // ← ajouter
 
   function handleLogout() {
     clearAuth();
     navigate("/login", { replace: true });
   }
 
+  if (isLoading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur : {error}</p>;
+
   return (
     <main>
-      <h1>Dashboard SportSee</h1>
-      <p>Utilisateur ID : {userId}</p>
+      <h1>Bonjour {userInfo?.profile.firstName} !</h1>
+      <p>Objectif semaine : {userInfo?.weeklyGoal} séances</p>
+      <p>Score semaine : {userInfo?.weeklyScore}%</p>
       <button onClick={handleLogout}>Se déconnecter</button>
     </main>
   );
