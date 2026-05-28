@@ -1,8 +1,9 @@
 // =============================================================================
-// SPORTSEE — Graphique BPM (barres + ligne moyenne — semaine courante)
+// SPORTSEE — Graphique BPM (barres + ligne moyenne courbée — semaine courante)
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
+import { useState } from "react";
 import {
   ComposedChart,
   Bar,
@@ -22,6 +23,9 @@ interface BpmChartProps {
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
 export default function BpmChart({ data }: BpmChartProps) {
+  // État pour gérer la couleur de la ligne au survol
+  const [isHovered, setIsHovered] = useState(false);
+
   const chartData = DAYS.map((day, index) => {
     const session = data.find((s) => {
       const d = new Date(s.date);
@@ -42,6 +46,9 @@ export default function BpmChart({ data }: BpmChartProps) {
       <ComposedChart
         data={chartData}
         margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+        style={{ cursor: "pointer" }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <CartesianGrid vertical={false} stroke="#F0F0F5" />
         <XAxis
@@ -57,6 +64,7 @@ export default function BpmChart({ data }: BpmChartProps) {
           domain={["auto", "auto"]}
         />
         <Tooltip
+          cursor={{ fill: "transparent" }}
           formatter={(value, name) => {
             const labels: Record<string, string> = {
               min: "Min BPM",
@@ -71,24 +79,34 @@ export default function BpmChart({ data }: BpmChartProps) {
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
         />
+
+        {/* Barres Min — rose clair, sans changement au survol */}
         <Bar
           dataKey="min"
           fill="var(--color-bar-bpm-min)"
-          radius={[4, 4, 0, 0]}
+          radius={[30, 30, 30, 30]}
           maxBarSize={14}
+          activeBar={<rect fill="var(--color-bar-bpm-min)" rx={4} ry={4} />}
         />
+
+        {/* Barres Max — rouge, sans changement au survol */}
         <Bar
           dataKey="max"
           fill="var(--color-bar-bpm-max)"
-          radius={[4, 4, 0, 0]}
+          radius={[30, 30, 30, 30]}
           maxBarSize={14}
+          activeBar={<rect fill="var(--color-bar-bpm-max)" rx={4} ry={4} />}
         />
+
+        {/* Ligne courbée — grise par défaut, bleue au survol du graphique
+            Points toujours bleus #0B23F4 */}
         <Line
-          type="monotone"
+          type="natural"
           dataKey="average"
-          stroke="var(--color-primary)"
+          stroke={isHovered ? "#0B23F4" : "#F2F3FF"}
           strokeWidth={2}
-          dot={{ fill: "var(--color-primary)", r: 4 }}
+          dot={{ fill: "#0B23F4", r: 2, stroke: "#0B23F4" }}
+          activeDot={{ r: 2, fill: "#0B23F4", stroke: "#0B23F4" }}
           connectNulls
         />
       </ComposedChart>

@@ -4,7 +4,7 @@
 // =============================================================================
 
 // app/components/ProtectedRoute.tsx
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { isAuthenticated } from "../auth/authCookie";
 import Navbar from "./Navbar/Navbar";
 import Footer from "./Footer/Footer";
@@ -14,10 +14,13 @@ export default function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
+  const location = useLocation();
+  const isProfile = location.pathname === "/profile";
+
   return (
     <div className="app-layout">
       <Navbar />
-      <main className="app-main">
+      <main className={isProfile ? "app-main app-main--wide" : "app-main"}>
         <Outlet />
       </main>
       <Footer />

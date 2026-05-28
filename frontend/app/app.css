@@ -116,6 +116,10 @@ a:hover {
   width: 100%;
 }
 
+.app-main--wide {
+  max-width: 1300px; /* ← aligné sur la navbar */
+}
+
 /* ============================================================================
    NAVBAR
    ============================================================================ */
@@ -327,11 +331,12 @@ a:hover {
 }
 
 .login-left {
+  position: relative; /* ← nécessaire pour que le logo absolu se positionne correctement */
   display: flex;
   flex-direction: column;
   padding: 2rem 3rem;
   justify-content: center;
-  align-items: center; /* ← centre horizontalement */
+  align-items: center;
 }
 
 .login-logo {
@@ -364,6 +369,7 @@ a:hover {
   position: relative;
   overflow: hidden;
   height: 100vh;
+  background-color: #1A1A2E; /* ← fond sombre si image absente */
 }
 
 .login-right img {
@@ -412,9 +418,9 @@ a:hover {
 }
 
 .profile-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  border-radius: 12px; /* ← rectangulaire au lieu de 50% */
   object-fit: cover;
 }
 
@@ -432,18 +438,23 @@ a:hover {
 .profile-stat-label {
   font-size: 0.875rem;
   color: var(--color-text-muted);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0; /* ← supprime l'espacement vertical */
 }
 
 .profile-stat-value {
   background-color: var(--color-primary);
   color: var(--color-text-light);
-  padding: 0.75rem 2rem;
+  padding: 1rem 2rem;
   border-radius: var(--radius-btn);
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  min-width: 160px;
+  min-width: 200px;
+  min-height: 70px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem; /* ← espace entre icône et valeur */
 }
 
 /* ============================================================================
@@ -609,9 +620,17 @@ a:hover {
 
 .profile-page {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 2rem;
+  grid-template-columns: 380px 1fr;
+  gap: 3rem;
   align-items: start;
+}
+
+.profile-page-wrapper {
+  /* Compense le padding de app-main pour s'aligner sur la navbar */
+  margin-left: -2rem;
+  margin-right: -2rem;
+  padding: 0 2rem;
+  width: calc(100% + 4rem);
 }
 
 .profile-left {
@@ -624,12 +643,15 @@ a:hover {
   background-color: var(--color-bg-card);
   border-radius: var(--radius-card);
   padding: 2rem;
+  display: flex;
+  flex-direction: column;  /* ← empile photo, nom, date */
+  align-items: flex-start;
 }
 
 .profile-card-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;      /* ← rectangulaire avec coins arrondis */
   object-fit: cover;
   margin-bottom: 1rem;
 }
@@ -693,19 +715,20 @@ a:hover {
 
 .stat-card-label {
   font-size: 0.85rem;
-  opacity: 0.85;
+  color: rgba(255, 255, 255, 0.7); /* ← blanc semi-transparent */
   margin-bottom: 0.75rem;
 }
 
 .stat-card-value {
-  font-size: 1.75rem;
+  font-size: 2rem; /* ← plus grand */
   font-weight: 700;
+  color: #FFFFFF;
 }
 
 .stat-card-value span {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 400;
-  opacity: 0.85;
+  color: rgba(255, 255, 255, 0.7); /* ← unité semi-transparente */
   margin-left: 0.25rem;
 }
 

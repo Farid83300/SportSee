@@ -162,9 +162,10 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
-        <div>
+        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
           <p className="profile-stat-label">Distance totale parcourue</p>
           <div className="profile-stat-value">
+            <img src="/icons/running.svg" alt="" style={{ width: "28px", height: "28px" }} />
             {userInfo.statistics.totalDistance} km
           </div>
         </div>

@@ -49,7 +49,7 @@ export default function KmChart({ data }: KmChartProps) {
         <Bar
           dataKey="distance"
           fill="#B6BDFC"
-          radius={[4, 4, 0, 0]}
+          radius={[30, 30, 30, 30]}
           maxBarSize={14}
           activeBar={<rect fill="#0B23F4" rx={4} ry={4} />}
         />
