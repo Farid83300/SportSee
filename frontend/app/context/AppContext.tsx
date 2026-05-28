@@ -9,6 +9,7 @@ import type { UserInfo } from "../data/mockData";
 import { mockUserInfo, USE_MOCK } from "../data/mockData";
 import { getToken } from "../auth/authCookie";
 
+// ***********************. a mettre dans un .env
 const API_URL = "http://localhost:8000";
 
 // ---------------------------------------------------------------------------

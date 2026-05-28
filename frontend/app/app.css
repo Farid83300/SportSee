@@ -17,7 +17,7 @@
   --color-accent-light:  #FFBEBE; /* rouge clair — barres min BPM */
 
   /* Couleurs de fond */
-  --color-bg:            #F0F0F5; /* fond général de l'app */
+  --color-bg:            #F2F3FF; /* fond général de l'app */
   --color-bg-card:       #FFFFFF; /* fond des cartes/panels */
   --color-bg-dark:       #020122; /* fond navbar top */
 
@@ -27,7 +27,7 @@
   --color-text-light:    #FFFFFF; /* texte sur fond sombre */
 
   /* Graphiques */
-  --color-bar-km:        #9B9BFF; /* barres bleues claires — graphique Km */
+  --color-bar-km:        #B6BDFC; /* barres bleues claires — graphique Km */
   --color-bar-bpm-max:   #FF0101; /* barres rouges — BPM max */
   --color-bar-bpm-min:   #FFBEBE; /* barres roses — BPM min */
   --color-pie-done:      #2D2DFF; /* portion réalisée — Pie chart */
@@ -109,10 +109,10 @@ a:hover {
 
 .app-main {
   flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
-  min-width: 1024px; /* ← largeur minimale du contenu */
-  margin: 0 auto;
+  padding: 2rem 2rem 4rem 2rem;
+  max-width: 1140px;
+  min-width: 1024px;
+  margin: 2rem auto 0 auto; /* ← espace entre navbar et contenu */
   width: 100%;
 }
 
@@ -121,17 +121,16 @@ a:hover {
    ============================================================================ */
 
 .navbar {
-  background-color: var(--color-bg-card);
+  background-color: var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
   height: 64px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  min-width: 1024px; /* ← navbar cohérente avec le reste */
+  box-shadow: none;
+  min-width: 1024px;
+  margin-top: 30px;        /* ← espace par rapport au body */
+  padding: 0 calc((100% - 1300px) / 2 + 2rem);
+  /* position: sticky et top: 0 supprimés */
 }
 
 .navbar-logo {
@@ -144,28 +143,46 @@ a:hover {
   text-decoration: none;
 }
 
+.navbar-logo img {
+  width: 156px;
+  height: 23px;
+  display: block;
+}
+
 .navbar-nav {
   display: flex;
   align-items: center;
   gap: 2rem;
   list-style: none;
+  background-color: var(--color-bg-card);
+  border-radius: 50px;
+  width: 461px;
+  height: 49px;
+  padding: 0 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  justify-content: center;
 }
 
 .navbar-nav a {
-  color: var(--color-text);
+  color: var(--color-text); /* ← texte noir */
   font-weight: 500;
   font-size: 0.95rem;
   transition: color 0.2s;
 }
 
-.navbar-nav a:hover,
-.navbar-nav a.active {
-  color: var(--color-primary);
+.navbar-nav a:hover {
+  color: var(--color-primary); /* ← bleu au survol uniquement */
   text-decoration: none;
 }
 
+.navbar-nav a.active {
+  color: var(--color-text); /* ← noir sur la page active */
+  text-decoration: none;
+  font-weight: 600; /* ← légèrement plus gras pour indiquer la page active */
+}
+
 .navbar-separator {
-  width: 1px;
+  width: 2px;
   height: 24px;
   background-color: #E0E0E0;
 }
@@ -211,6 +228,17 @@ a:hover {
   background-color: transparent;
   color: var(--color-accent);
   border: 1px solid var(--color-accent);
+}
+
+.btn-logout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-primary); /* ← bleu au lieu de accent */
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0;
+  font-family: var(--font-sans);
 }
 
 /* ============================================================================
@@ -349,11 +377,17 @@ a:hover {
   bottom: 2rem;
   right: 2rem;
   background-color: var(--color-bg-card);
-  border-radius: var(--radius-card);
-  padding: 1rem 1.5rem;
-  max-width: 280px;
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
+  border-radius: 50px;
+  padding: 0 1.5rem;
+  max-width: 320px;
+  width: 320px;
+  height: 68px;                        /* ← hauteur fixe */
+  display: flex;
+  align-items: center;                 /* ← centre le texte verticalement */
+  font-size: 0.75rem;                  /* ← taille adaptée à 68px */
+  line-height: 1.4;
+  color: var(--color-primary);         /* ← texte bleu */
+  background-color: #FFFFFF;           /* ← fond blanc */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
@@ -680,15 +714,16 @@ a:hover {
    ============================================================================ */
 
 .footer {
+  height: 40px;
   background-color: var(--color-bg-card);
-  padding: 1.25rem 2rem;
+  padding: 1.25rem calc((100% - 1600px) / 2 + 2rem);
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.8rem;
   color: var(--color-text-muted);
   border-top: 1px solid #E0E0E0;
-  min-width: 1024px; /* ← cohérent avec le reste */
+  min-width: 1024px;
 }
 
 .footer-links {
