@@ -8,8 +8,6 @@
 import {
   USE_MOCK,
   getMockUser,
-  getWeekRange,
-  getLast4WeeksRange,
   type UserInfo,
   type UserActivity,
 } from "../data/mockData";
@@ -28,8 +26,73 @@ function authHeaders(): { Authorization: string } {
 }
 
 // ---------------------------------------------------------------------------
+// Helper — calcule une plage de dates avec offset en semaines
+// offset = 0 → semaine courante, -1 → semaine précédente, etc.
+// ---------------------------------------------------------------------------
+export function getWeekRangeWithOffset(offset: number = 0): {
+  startWeek: string;
+  endWeek: string;
+  label: string;
+} {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday + offset * 7);
+  monday.setHours(0, 0, 0, 0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+
+  const toISO = (d: Date) => d.toISOString().split("T")[0];
+  const toLabel = (d: Date) =>
+    d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+
+  return {
+    startWeek: toISO(monday),
+    endWeek: toISO(sunday),
+    label: `${toLabel(monday)} - ${toLabel(sunday)}`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Helper — calcule une plage de 4 semaines avec offset
+// offset = 0 → 4 dernières semaines, -1 → 4 semaines d'avant, etc.
+// ---------------------------------------------------------------------------
+export function getLast4WeeksRangeWithOffset(offset: number = 0): {
+  startWeek: string;
+  endWeek: string;
+  label: string;
+} {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+  const thisMonday = new Date(now);
+  thisMonday.setDate(now.getDate() + diffToMonday + offset * 28);
+  thisMonday.setHours(0, 0, 0, 0);
+
+  const endDate = new Date(thisMonday);
+  endDate.setDate(thisMonday.getDate() + 27);
+  endDate.setHours(23, 59, 59, 999);
+
+  const startDate = new Date(thisMonday);
+
+  const toISO = (d: Date) => d.toISOString().split("T")[0];
+  const toLabel = (d: Date) =>
+    d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+
+  return {
+    startWeek: toISO(startDate),
+    endWeek: toISO(endDate),
+    label: `${toLabel(startDate)} - ${toLabel(endDate)}`,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // GET /api/user-info
-// Retourne le profil, les stats et le weeklyGoal de l'utilisateur connecté
 // ---------------------------------------------------------------------------
 export async function fetchUserInfo(): Promise<UserInfo> {
   if (USE_MOCK) {
@@ -50,16 +113,17 @@ export async function fetchUserInfo(): Promise<UserInfo> {
 }
 
 // ---------------------------------------------------------------------------
-// GET /api/user-activity — semaine courante
+// GET /api/user-activity — semaine avec offset
 // ---------------------------------------------------------------------------
-export async function fetchWeekActivity(): Promise<UserActivity> {
+export async function fetchWeekActivity(offset: number = 0): Promise<UserActivity> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
     const userId = getUserId() ?? "user123";
+    // En mock, on retourne toujours la même semaine (offset ignoré)
     return getMockUser(userId).weekActivity;
   }
 
-  const { startWeek, endWeek } = getWeekRange();
+  const { startWeek, endWeek } = getWeekRangeWithOffset(offset);
   const response = await fetch(
     `${API_URL}/api/user-activity?startWeek=${startWeek}&endWeek=${endWeek}`,
     { headers: authHeaders() }
@@ -73,16 +137,16 @@ export async function fetchWeekActivity(): Promise<UserActivity> {
 }
 
 // ---------------------------------------------------------------------------
-// GET /api/user-activity — 4 dernières semaines
+// GET /api/user-activity — 4 semaines avec offset
 // ---------------------------------------------------------------------------
-export async function fetchLast4WeeksActivity(): Promise<UserActivity> {
+export async function fetchLast4WeeksActivity(offset: number = 0): Promise<UserActivity> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
     const userId = getUserId() ?? "user123";
     return getMockUser(userId).last4WeeksActivity;
   }
 
-  const { startWeek, endWeek } = getLast4WeeksRange();
+  const { startWeek, endWeek } = getLast4WeeksRangeWithOffset(offset);
   const response = await fetch(
     `${API_URL}/api/user-activity?startWeek=${startWeek}&endWeek=${endWeek}`,
     { headers: authHeaders() }

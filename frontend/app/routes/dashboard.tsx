@@ -1,17 +1,24 @@
 // =============================================================================
 // SPORTSEE — Page Dashboard
-// Utilise useAppContext + useUserActivity
+// Avec navigation par offset sur les graphiques Km et BPM
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
+import { useState, useEffect } from "react";
 import { useAppContext } from "../context/useAppContext";
-import { useUserActivity } from "../hooks/useUserActivity";
 import {
-  getLast4WeeksRange,
-  getWeekRange,
   computeWeeklyStats,
   groupByWeek,
+  getWeekRange,
+  getLast4WeeksRange,
+  type UserActivity,
 } from "../data/mockData";
+import {
+  fetchWeekActivity,
+  fetchLast4WeeksActivity,
+  getWeekRangeWithOffset,
+  getLast4WeeksRangeWithOffset,
+} from "../services/apiService";
 import KmChart from "../components/charts/KmChart";
 import BpmChart from "../components/charts/BpmChart";
 import WeeklyPieChart from "../components/charts/WeeklyPieChart";
@@ -31,12 +38,64 @@ function formatDateLong(dateStr: string): string {
 
 export default function DashboardPage() {
   const { userInfo, isLoading: infoLoading, error: infoError } = useAppContext();
-  const {
-    weekActivity,
-    last4WeeksActivity,
-    isLoading: activityLoading,
-    error: activityError,
-  } = useUserActivity("dashboard");
+
+  // ---------------------------------------------------------------------------
+  // États de navigation
+  // 0 = période courante, -1 = période précédente, -2 = encore avant, etc.
+  // ---------------------------------------------------------------------------
+  const [kmOffset, setKmOffset] = useState(0);
+  const [bpmOffset, setBpmOffset] = useState(0);
+
+  // ---------------------------------------------------------------------------
+  // Données d'activité avec navigation
+  // ---------------------------------------------------------------------------
+  const [weekActivity, setWeekActivity] = useState<UserActivity>([]);
+  const [last4Activity, setLast4Activity] = useState<UserActivity>([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [activityError, setActivityError] = useState<string | null>(null);
+
+  // Semaine courante (pie chart + stats) — toujours offset 0
+  const [currentWeekActivity, setCurrentWeekActivity] = useState<UserActivity>([]);
+
+  useEffect(() => {
+    async function loadCurrentWeek() {
+      try {
+        const data = await fetchWeekActivity(0);
+        setCurrentWeekActivity(data);
+      } catch { /* silencieux */ }
+    }
+    loadCurrentWeek();
+  }, []);
+
+  // Chargement BPM selon offset
+  useEffect(() => {
+    async function loadBpm() {
+      setActivityLoading(true);
+      setActivityError(null);
+      try {
+        const data = await fetchWeekActivity(bpmOffset);
+        setWeekActivity(data);
+      } catch (err) {
+        setActivityError(err instanceof Error ? err.message : "Erreur inconnue");
+      } finally {
+        setActivityLoading(false);
+      }
+    }
+    loadBpm();
+  }, [bpmOffset]);
+
+  // Chargement Km selon offset
+  useEffect(() => {
+    async function loadKm() {
+      try {
+        const data = await fetchLast4WeeksActivity(kmOffset);
+        setLast4Activity(data);
+      } catch (err) {
+        setActivityError(err instanceof Error ? err.message : "Erreur inconnue");
+      }
+    }
+    loadKm();
+  }, [kmOffset]);
 
   // ---------------------------------------------------------------------------
   // États de chargement et d'erreur
@@ -58,19 +117,23 @@ export default function DashboardPage() {
   // ---------------------------------------------------------------------------
   // Données calculées
   // ---------------------------------------------------------------------------
-  const weeklyStats = computeWeeklyStats(weekActivity);
-  const kmByWeek = groupByWeek(last4WeeksActivity);
+  const weeklyStats = computeWeeklyStats(currentWeekActivity);
+  const kmByWeek = groupByWeek(last4Activity);
 
-  const { startWeek: start4, endWeek: end4 } = getLast4WeeksRange();
-  const last4Label = `${formatDate(start4)} - ${formatDate(end4)}`;
+  // Labels avec offset
+  const { label: kmLabel } = getLast4WeeksRangeWithOffset(kmOffset);
+  const { label: bpmLabel } = getWeekRangeWithOffset(bpmOffset);
 
+  // Label semaine courante (pie chart)
   const { startWeek, endWeek } = getWeekRange();
   const weekLabel = `Du ${formatDate(startWeek)} au ${formatDate(endWeek)}`;
 
+  // BPM moyen
   const avgBpm = weekActivity.length > 0
     ? Math.round(weekActivity.reduce((sum, s) => sum + s.heartRate.average, 0) / weekActivity.length)
     : 0;
 
+  // Distance moyenne sur 4 semaines
   const avgKm = kmByWeek.length > 0
     ? Math.round(kmByWeek.reduce((sum, w) => sum + w.distance, 0) / kmByWeek.length)
     : 0;
@@ -112,14 +175,27 @@ export default function DashboardPage() {
 
       <div className="charts-grid">
 
-        {/* Graphique Km */}
+        {/* ── Graphique Km ── */}
         <div className="card">
           <div className="chart-header">
             <div>
               <p className="chart-value primary">{avgKm}km en moyenne</p>
               <p className="card-subtitle">Total des kilomètres 4 dernières semaines</p>
             </div>
-            <div className="chart-nav"><span>{last4Label}</span></div>
+            {/* Navigation Km */}
+            <div className="chart-nav">
+              <button onClick={() => setKmOffset((o) => o - 1)} aria-label="Période précédente">
+                ‹
+              </button>
+              <span>{kmLabel}</span>
+              <button
+                onClick={() => setKmOffset((o) => Math.min(o + 1, 0))}
+                disabled={kmOffset === 0}
+                aria-label="Période suivante"
+              >
+                ›
+              </button>
+            </div>
           </div>
           <KmChart data={kmByWeek} />
           <div className="chart-legend">
@@ -130,14 +206,27 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Graphique BPM */}
+        {/* ── Graphique BPM ── */}
         <div className="card">
           <div className="chart-header">
             <div>
               <p className="chart-value accent">{avgBpm} BPM</p>
               <p className="card-subtitle">Fréquence cardiaque moyenne</p>
             </div>
-            <div className="chart-nav"><span>{last4Label}</span></div>
+            {/* Navigation BPM */}
+            <div className="chart-nav">
+              <button onClick={() => setBpmOffset((o) => o - 1)} aria-label="Semaine précédente">
+                ‹
+              </button>
+              <span>{bpmLabel}</span>
+              <button
+                onClick={() => setBpmOffset((o) => Math.min(o + 1, 0))}
+                disabled={bpmOffset === 0}
+                aria-label="Semaine suivante"
+              >
+                ›
+              </button>
+            </div>
           </div>
           <BpmChart data={weekActivity} />
           <div className="chart-legend">
