@@ -1,28 +1,16 @@
 // =============================================================================
 // SPORTSEE — Page Profil
-// Route protégée — nécessite une authentification
+// Utilise useAppContext + useUserActivity
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
-import { useState, useEffect } from "react";
 import { useAppContext } from "../context/useAppContext";
-import { getToken, getUserId } from "../auth/authCookie";
-import {
-  USE_MOCK,
-  getMockUser,
-  computeAllTimeStats,
-  formatDuration,
-  type UserActivity,
-} from "../data/mockData";
-
-const API_URL = "http://localhost:8000";
+import { useUserActivity } from "../hooks/useUserActivity";
+import { computeAllTimeStats, formatDuration } from "../data/mockData";
 
 function formatDateLong(dateStr: string): string {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
+  return new Date(dateStr).toLocaleDateString("fr-FR", {
+    day: "numeric", month: "long", year: "numeric",
   });
 }
 
@@ -40,47 +28,12 @@ function formatGender(gender: string): string {
 
 export default function ProfilePage() {
   const { userInfo, isLoading: infoLoading, error: infoError } = useAppContext();
-
-  const [allActivity, setAllActivity] = useState<UserActivity>([]);
-  const [profileExtendedGender, setProfileExtendedGender] = useState<string>("female");
-  const [activityLoading, setActivityLoading] = useState(true);
-  const [activityError, setActivityError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchAllActivity() {
-      setActivityLoading(true);
-      setActivityError(null);
-
-      try {
-        if (USE_MOCK) {
-          await new Promise((r) => setTimeout(r, 300));
-          // ← Récupère les données du bon utilisateur selon le cookie
-          const userId = getUserId() ?? "user123";
-          const mockUser = getMockUser(userId);
-          setAllActivity(mockUser.allActivity);
-          setProfileExtendedGender(mockUser.profileExtended.gender);
-          return;
-        }
-
-        const token = getToken();
-        const response = await fetch(
-          `${API_URL}/api/user-activity?startWeek=2025-01-01&endWeek=2025-12-31`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        if (!response.ok) throw new Error("Erreur lors du chargement des activités");
-        const data = await response.json();
-        setAllActivity(data);
-
-      } catch (err) {
-        setActivityError(err instanceof Error ? err.message : "Erreur inconnue");
-      } finally {
-        setActivityLoading(false);
-      }
-    }
-
-    fetchAllActivity();
-  }, []);
+  const {
+    allActivity,
+    gender,
+    isLoading: activityLoading,
+    error: activityError,
+  } = useUserActivity("profile");
 
   if (infoLoading || activityLoading) {
     return <div className="loading">Chargement...</div>;
@@ -128,7 +81,7 @@ export default function ProfilePage() {
           <p className="profile-info-title">Votre profil</p>
           <ul className="profile-info-list">
             <li>Âge : <strong>{userInfo.profile.age}</strong></li>
-            <li>Genre : <strong>{formatGender(profileExtendedGender)}</strong></li>
+            <li>Genre : <strong>{formatGender(gender)}</strong></li>
             <li>Taille : <strong>{formatHeight(userInfo.profile.height)}</strong></li>
             <li>Poids : <strong>{userInfo.profile.weight}kg</strong></li>
           </ul>
