@@ -6,8 +6,8 @@
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import type { UserInfo } from "../data/mockData";
-import { mockUserInfo, USE_MOCK } from "../data/mockData";
-import { getToken } from "../auth/authCookie";
+import { getMockUser, USE_MOCK } from "../data/mockData";
+import { getToken, getUserId } from "../auth/authCookie";
 
 // ***********************. a mettre dans un .env
 const API_URL = "http://localhost:8000";
@@ -46,7 +46,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (USE_MOCK) {
         // Mode mock — simule un délai réseau
         await new Promise((resolve) => setTimeout(resolve, 300));
-        setUserInfo(mockUserInfo);
+        // ← Récupère les données du bon utilisateur selon le cookie
+        const userId = getUserId() ?? "user123";
+        const mockUser = getMockUser(userId);
+        setUserInfo(mockUser.userInfo);
         return;
       }
 

@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { saveAuth } from "../../auth/authCookie";
-import { USE_MOCK, mockAuthResponse } from "../../data/mockData";
+import { USE_MOCK } from "../../data/mockData";
 
 const API_URL = "http://localhost:8000";
 
@@ -18,6 +18,15 @@ const API_URL = "http://localhost:8000";
 function emailToUsername(email: string): string {
   return email.includes("@") ? email.split("@")[0] : email;
 }
+
+// ---------------------------------------------------------------------------
+// Map username → userId pour le mode mock
+// ---------------------------------------------------------------------------
+const MOCK_USERNAME_TO_USER_ID: Record<string, string> = {
+  "sophiemartin": "user123",
+  "emmaleroy":    "user789",
+  "marcdubois":   "user456",
+};
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -33,9 +42,11 @@ export default function LoginForm() {
 
     try {
       if (USE_MOCK) {
-        // Mode mock — simule une connexion réussie
+        // Mode mock — trouve le bon userId selon le username saisi
         await new Promise((resolve) => setTimeout(resolve, 500));
-        saveAuth(mockAuthResponse.token, mockAuthResponse.userId);
+        const username = emailToUsername(email);
+        const userId = MOCK_USERNAME_TO_USER_ID[username] ?? "user123";
+        saveAuth("mock-jwt-token-dev-only", userId);
         navigate("/", { replace: true });
         return;
       }

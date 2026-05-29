@@ -6,11 +6,10 @@
 
 import { useState, useEffect } from "react";
 import { useAppContext } from "../context/useAppContext";
-import { getToken } from "../auth/authCookie";
+import { getToken, getUserId } from "../auth/authCookie";
 import {
   USE_MOCK,
-  mockUserActivity,
-  mockLast4WeeksActivity,
+  getMockUser,
   getWeekRange,
   getLast4WeeksRange,
   computeWeeklyStats,
@@ -60,8 +59,11 @@ export default function DashboardPage() {
       try {
         if (USE_MOCK) {
           await new Promise((r) => setTimeout(r, 300));
-          setWeekActivity(mockUserActivity);
-          setLast4Activity(mockLast4WeeksActivity);
+          // ← Récupère les données du bon utilisateur selon le cookie
+          const userId = getUserId() ?? "user123";
+          const mockUser = getMockUser(userId);
+          setWeekActivity(mockUser.weekActivity);
+          setLast4Activity(mockUser.last4WeeksActivity);
           return;
         }
 

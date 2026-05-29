@@ -6,11 +6,10 @@
 
 import { useState, useEffect } from "react";
 import { useAppContext } from "../context/useAppContext";
-import { getToken } from "../auth/authCookie";
+import { getToken, getUserId } from "../auth/authCookie";
 import {
   USE_MOCK,
-  mockUserActivity,
-  mockUserProfileExtended,
+  getMockUser,
   computeAllTimeStats,
   formatDuration,
   type UserActivity,
@@ -43,6 +42,7 @@ export default function ProfilePage() {
   const { userInfo, isLoading: infoLoading, error: infoError } = useAppContext();
 
   const [allActivity, setAllActivity] = useState<UserActivity>([]);
+  const [profileExtendedGender, setProfileExtendedGender] = useState<string>("female");
   const [activityLoading, setActivityLoading] = useState(true);
   const [activityError, setActivityError] = useState<string | null>(null);
 
@@ -54,7 +54,11 @@ export default function ProfilePage() {
       try {
         if (USE_MOCK) {
           await new Promise((r) => setTimeout(r, 300));
-          setAllActivity(mockUserActivity);
+          // ← Récupère les données du bon utilisateur selon le cookie
+          const userId = getUserId() ?? "user123";
+          const mockUser = getMockUser(userId);
+          setAllActivity(mockUser.allActivity);
+          setProfileExtendedGender(mockUser.profileExtended.gender);
           return;
         }
 
@@ -98,7 +102,6 @@ export default function ProfilePage() {
   );
 
   return (
-    // ← wrapper supprimé — l'alignement est géré par app-main--wide dans ProtectedRoute
     <div className="profile-page">
 
       {/* ── Colonne gauche — infos personnelles ── */}
@@ -125,7 +128,7 @@ export default function ProfilePage() {
           <p className="profile-info-title">Votre profil</p>
           <ul className="profile-info-list">
             <li>Âge : <strong>{userInfo.profile.age}</strong></li>
-            <li>Genre : <strong>{formatGender(mockUserProfileExtended.gender)}</strong></li>
+            <li>Genre : <strong>{formatGender(profileExtendedGender)}</strong></li>
             <li>Taille : <strong>{formatHeight(userInfo.profile.height)}</strong></li>
             <li>Poids : <strong>{userInfo.profile.weight}kg</strong></li>
           </ul>
