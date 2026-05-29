@@ -1,29 +1,20 @@
 // =============================================================================
 // SPORTSEE — Page Profil
-// Utilise useAppContext + useUserActivity
+// Utilise useAppContext + useUserActivity + composants ProfileCard, ProfileInfoCard, StatCard
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
 import { useAppContext } from "../context/useAppContext";
 import { useUserActivity } from "../hooks/useUserActivity";
 import { computeAllTimeStats, formatDuration } from "../data/mockData";
+import ProfileCard from "../components/ProfileCard/ProfileCard";
+import ProfileInfoCard from "../components/ProfileInfoCard/ProfileInfoCard";
+import StatCard from "../components/StatCard/StatCard";
 
 function formatDateLong(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("fr-FR", {
     day: "numeric", month: "long", year: "numeric",
   });
-}
-
-function formatHeight(cm: number): string {
-  const m = Math.floor(cm / 100);
-  const remainder = cm % 100;
-  return `${m}m${remainder.toString().padStart(2, "0")}`;
-}
-
-function formatGender(gender: string): string {
-  if (gender === "female") return "Femme";
-  if (gender === "male") return "Homme";
-  return gender;
 }
 
 export default function ProfilePage() {
@@ -60,32 +51,19 @@ export default function ProfilePage() {
       {/* ── Colonne gauche — infos personnelles ── */}
       <div className="profile-left">
 
-        <div className="profile-card">
-          <img
-            src={userInfo.profile.profilePicture}
-            alt={userInfo.profile.firstName}
-            className="profile-card-avatar"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/images/default-avatar.png";
-            }}
-          />
-          <p className="profile-card-name">
-            {userInfo.profile.firstName} {userInfo.profile.lastName}
-          </p>
-          <p className="profile-card-since">
-            Membre depuis le {formatDateLong(userInfo.profile.createdAt)}
-          </p>
-        </div>
+        <ProfileCard
+          firstName={userInfo.profile.firstName}
+          lastName={userInfo.profile.lastName}
+          createdAt={userInfo.profile.createdAt}
+          profilePicture={userInfo.profile.profilePicture}
+        />
 
-        <div className="profile-info-card">
-          <p className="profile-info-title">Votre profil</p>
-          <ul className="profile-info-list">
-            <li>Âge : <strong>{userInfo.profile.age}</strong></li>
-            <li>Genre : <strong>{formatGender(gender)}</strong></li>
-            <li>Taille : <strong>{formatHeight(userInfo.profile.height)}</strong></li>
-            <li>Poids : <strong>{userInfo.profile.weight}kg</strong></li>
-          </ul>
-        </div>
+        <ProfileInfoCard
+          age={userInfo.profile.age}
+          gender={gender}
+          height={userInfo.profile.height}
+          weight={userInfo.profile.weight}
+        />
 
       </div>
 
@@ -99,44 +77,30 @@ export default function ProfilePage() {
         </p>
 
         <div className="stats-grid">
-
-          <div className="stat-card">
-            <p className="stat-card-label">Temps total couru</p>
-            <p className="stat-card-value">{totalDurationFormatted}</p>
-          </div>
-
-          <div className="stat-card">
-            <p className="stat-card-label">Calories brûlées</p>
-            <p className="stat-card-value">
-              {computedStats.totalCaloriesBurned.toLocaleString("fr-FR")}
-              <span>cal</span>
-            </p>
-          </div>
-
-          <div className="stat-card">
-            <p className="stat-card-label">Distance totale parcourue</p>
-            <p className="stat-card-value">
-              {userInfo.statistics.totalDistance}
-              <span>km</span>
-            </p>
-          </div>
-
-          <div className="stat-card">
-            <p className="stat-card-label">Nombre de jours de repos</p>
-            <p className="stat-card-value">
-              {computedStats.restDays}
-              <span>jours</span>
-            </p>
-          </div>
-
-          <div className="stat-card">
-            <p className="stat-card-label">Nombre de sessions</p>
-            <p className="stat-card-value">
-              {userInfo.statistics.totalSessions}
-              <span>sessions</span>
-            </p>
-          </div>
-
+          <StatCard
+            label="Temps total couru"
+            value={totalDurationFormatted}
+          />
+          <StatCard
+            label="Calories brûlées"
+            value={computedStats.totalCaloriesBurned.toLocaleString("fr-FR")}
+            unit="cal"
+          />
+          <StatCard
+            label="Distance totale parcourue"
+            value={userInfo.statistics.totalDistance}
+            unit="km"
+          />
+          <StatCard
+            label="Nombre de jours de repos"
+            value={computedStats.restDays}
+            unit="jours"
+          />
+          <StatCard
+            label="Nombre de sessions"
+            value={userInfo.statistics.totalSessions}
+            unit="sessions"
+          />
         </div>
       </div>
 
