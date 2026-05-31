@@ -7,6 +7,7 @@
 import { useNavigate } from "react-router";
 import { isAuthenticated } from "../auth/authCookie";
 import LoginForm from "../components/LoginForm/LoginForm";
+import AnimatedLogo from "../components/AnimatedLogo/AnimatedLogo";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -22,7 +23,8 @@ export default function LoginPage() {
       {/* ── Colonne gauche — logo + formulaire ── */}
       <div className="login-left">
         <div className="login-logo">
-          <img src="/logo.svg" alt="SportSee" style={{ height: "32px" }} />
+          <AnimatedLogo height={21} />
+          <img src="/SPORTSEE.svg" alt="SportSee" style={{ height: "21px", width: "auto" }} />
         </div>
         <LoginForm />
       </div>

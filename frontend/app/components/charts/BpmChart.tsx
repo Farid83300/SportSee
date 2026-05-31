@@ -23,7 +23,6 @@ interface BpmChartProps {
 const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
 export default function BpmChart({ data }: BpmChartProps) {
-  // État pour gérer la couleur de la ligne au survol
   const [isHovered, setIsHovered] = useState(false);
 
   const chartData = DAYS.map((day, index) => {
@@ -64,7 +63,7 @@ export default function BpmChart({ data }: BpmChartProps) {
           domain={["auto", "auto"]}
         />
         <Tooltip
-          cursor={{ fill: "transparent" }}
+          cursor={false}
           formatter={(value, name) => {
             const labels: Record<string, string> = {
               min: "Min BPM",
@@ -80,26 +79,37 @@ export default function BpmChart({ data }: BpmChartProps) {
           }}
         />
 
-        {/* Barres Min — rose clair, sans changement au survol */}
+        {/* Barres Min — rose clair */}
         <Bar
           dataKey="min"
-          fill="var(--color-bar-bpm-min)"
-          radius={[30, 30, 30, 30]}
           maxBarSize={14}
-          activeBar={<rect fill="var(--color-bar-bpm-min)" rx={4} ry={4} />}
+          fill="var(--color-bar-bpm-min)"
+          shape={(props: any) => {
+            const { x, y, width, height, fill } = props;
+            return <rect x={x} y={y} width={width} height={height} rx={7} ry={7} fill={fill} />;
+          }}
+          activeBar={(props: any) => {
+            const { x, y, width, height } = props;
+            return <rect x={x} y={y} width={width} height={height} rx={7} ry={7} fill="var(--color-bar-bpm-min)" />;
+          }}
         />
 
-        {/* Barres Max — rouge, sans changement au survol */}
+        {/* Barres Max — rouge */}
         <Bar
           dataKey="max"
-          fill="var(--color-bar-bpm-max)"
-          radius={[30, 30, 30, 30]}
           maxBarSize={14}
-          activeBar={<rect fill="var(--color-bar-bpm-max)" rx={4} ry={4} />}
+          fill="var(--color-bar-bpm-max)"
+          shape={(props: any) => {
+            const { x, y, width, height, fill } = props;
+            return <rect x={x} y={y} width={width} height={height} rx={7} ry={7} fill={fill} />;
+          }}
+          activeBar={(props: any) => {
+            const { x, y, width, height } = props;
+            return <rect x={x} y={y} width={width} height={height} rx={7} ry={7} fill="var(--color-bar-bpm-max)" />;
+          }}
         />
 
-        {/* Ligne courbée — grise par défaut, bleue au survol du graphique
-            Points toujours bleus #0B23F4 */}
+        {/* Ligne courbée — grise par défaut, bleue au survol */}
         <Line
           type="natural"
           dataKey="average"

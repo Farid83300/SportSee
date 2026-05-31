@@ -4,6 +4,8 @@
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
+import AnimatedLogo from "../AnimatedLogo/AnimatedLogo";
+
 export default function Footer() {
   return (
     <footer className="footer">
@@ -11,11 +13,11 @@ export default function Footer() {
       {/* Copyright */}
       <span>©Sportsee Tous droits réservés</span>
 
-      {/* Liens */}
+      {/* Liens + logo animé */}
       <div className="footer-links">
         <a href="#">Conditions générales</a>
         <a href="#">Contact</a>
-        <img src="/Logo2.png" alt="SportSee" style={{ height: "20px" }} />
+        <AnimatedLogo height={20} />
       </div>
 
     </footer>

@@ -6,6 +6,7 @@
 
 import { NavLink, useNavigate } from "react-router";
 import { clearAuth } from "../../auth/authCookie";
+import AnimatedLogo from "../AnimatedLogo/AnimatedLogo";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -18,9 +19,10 @@ export default function Navbar() {
   return (
     <nav className="navbar">
 
-      {/* Logo — aligné à gauche */}
+      {/* Logo — icône animée + texte SPORTSEE alignés */}
       <NavLink to="/" className="navbar-logo">
-        <img src="/logo.svg" alt="SportSee" />
+        <AnimatedLogo height={21} />
+        <img src="/SPORTSEE.svg" alt="SportSee" style={{ height: "21px" }} />
       </NavLink>
 
       {/* Navigation — pill à droite */}
