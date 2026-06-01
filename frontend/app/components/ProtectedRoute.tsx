@@ -4,17 +4,29 @@
 // =============================================================================
 
 // app/components/ProtectedRoute.tsx
-import { Navigate, Outlet, useLocation } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
+import { useEffect } from "react";
 import { isAuthenticated } from "../auth/authCookie";
 import Navbar from "./Navbar/Navbar";
 import Footer from "./Footer/Footer";
 
 export default function ProtectedRoute() {
+  // ✅ Tous les hooks appelés en premier, sans exception
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // ✅ Redirection dans un useEffect — jamais pendant le render
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login", { replace: true, state: { from: location } });
+    }
+  }, []);
+
+  // Si non authentifié, on ne rend rien le temps que useEffect s'exécute
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+    return null;
   }
 
-  const location = useLocation();
   const isProfile = location.pathname === "/profile";
 
   return (

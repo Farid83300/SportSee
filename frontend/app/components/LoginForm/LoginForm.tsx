@@ -13,7 +13,6 @@ const API_URL = "http://localhost:8000";
 
 // ---------------------------------------------------------------------------
 // Helper — extrait le username depuis un email
-// La maquette affiche "Adresse email" mais l'API attend un "username"
 // ---------------------------------------------------------------------------
 function emailToUsername(email: string): string {
   return email.includes("@") ? email.split("@")[0] : email;
@@ -28,7 +27,11 @@ const MOCK_USERNAME_TO_USER_ID: Record<string, string> = {
   "marcdubois":   "user456",
 };
 
-export default function LoginForm() {
+interface LoginFormProps {
+  onLoginSuccess?: () => void;
+}
+
+export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,18 +45,18 @@ export default function LoginForm() {
 
     try {
       if (USE_MOCK) {
-        // Mode mock — trouve le bon userId selon le username saisi
         await new Promise((resolve) => setTimeout(resolve, 500));
         const username = emailToUsername(email);
         const userId = MOCK_USERNAME_TO_USER_ID[username] ?? "user123";
         saveAuth("mock-jwt-token-dev-only", userId);
+        // ✅ Recharge le contexte avant de naviguer — évite "Token manquant"
+        onLoginSuccess?.();
         navigate("/", { replace: true });
         return;
       }
 
       // Mode API réelle
       const username = emailToUsername(email);
-
       const response = await fetch(`${API_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -66,6 +69,8 @@ export default function LoginForm() {
 
       const data = await response.json();
       saveAuth(data.token, data.userId);
+      // ✅ Recharge le contexte avant de naviguer
+      onLoginSuccess?.();
       navigate("/", { replace: true });
 
     } catch (err) {
@@ -87,10 +92,8 @@ export default function LoginForm() {
           Se connecter
         </h2>
 
-        {/* Message d'erreur */}
         {error && <p className="form-error">{error}</p>}
 
-        {/* Email */}
         <div className="form-group">
           <label className="form-label" htmlFor="email">
             Adresse email
@@ -106,7 +109,6 @@ export default function LoginForm() {
           />
         </div>
 
-        {/* Mot de passe */}
         <div className="form-group">
           <label className="form-label" htmlFor="password">
             Mot de passe
@@ -122,7 +124,6 @@ export default function LoginForm() {
           />
         </div>
 
-        {/* Bouton de soumission */}
         <button
           type="submit"
           className="btn btn-primary"
@@ -131,11 +132,9 @@ export default function LoginForm() {
           {loading ? "Connexion..." : "Se connecter"}
         </button>
 
-        {/* Lien mot de passe oublié */}
         <span className="form-link">Mot de passe oublié ?</span>
       </form>
 
-      {/* Comptes de démo — visible uniquement en mode mock */}
       {USE_MOCK && (
         <details style={{ marginTop: "1.5rem" }}>
           <summary style={{ cursor: "pointer", fontSize: "0.8rem", color: "var(--color-text-muted)" }}>

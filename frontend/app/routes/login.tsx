@@ -4,17 +4,18 @@
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
-import { useNavigate } from "react-router";
+import { Navigate } from "react-router";
 import { isAuthenticated } from "../auth/authCookie";
+import { useAppContext } from "../context/useAppContext";
 import LoginForm from "../components/LoginForm/LoginForm";
 import AnimatedLogo from "../components/AnimatedLogo/AnimatedLogo";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
+  const { refreshUserInfo } = useAppContext();
 
-  // Redirige vers le dashboard si déjà connecté
+  // ✅ Redirection déclarative via <Navigate> — pas d'appel de fonction dans le render
   if (isAuthenticated()) {
-    navigate("/", { replace: true });
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -26,7 +27,8 @@ export default function LoginPage() {
           <AnimatedLogo height={21} />
           <img src="/SPORTSEE.svg" alt="SportSee" style={{ height: "21px", width: "auto" }} />
         </div>
-        <LoginForm />
+        {/* ✅ refreshUserInfo transmis au formulaire pour recharger le contexte après login */}
+        <LoginForm onLoginSuccess={refreshUserInfo} />
       </div>
 
       {/* ── Colonne droite — image marathon ── */}
