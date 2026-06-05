@@ -1,6 +1,5 @@
 // =============================================================================
 // SPORTSEE — Hook useUserInfo
-// Récupère les infos utilisateur via le service API
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
@@ -20,6 +19,7 @@ export function useUserInfo(): UseUserInfoResult {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Déclarée hors de useEffect pour être retournée comme "refresh"
   async function load() {
     setIsLoading(true);
     setError(null);
@@ -33,6 +33,7 @@ export function useUserInfo(): UseUserInfoResult {
     }
   }
 
+  // [] = chargement unique au montage du composant
   useEffect(() => {
     load();
   }, []);

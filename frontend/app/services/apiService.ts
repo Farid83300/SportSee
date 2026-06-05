@@ -170,6 +170,8 @@ export async function fetchAllActivity(): Promise<UserActivity> {
   }
 
   const response = await fetch(
+    // revoir les dates en dur pour éviter les problèmes de date côté serveur (mocké dans ce cas)
+    // endweek date du jour et startweek date a laquelle le compte a ete cree
     `${API_URL}/api/user-activity?startWeek=2025-01-01&endWeek=2025-12-31`,
     { headers: authHeaders() }
   );

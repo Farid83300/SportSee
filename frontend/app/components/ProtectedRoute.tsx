@@ -16,6 +16,7 @@ export default function ProtectedRoute() {
   const navigate = useNavigate();
 
   // ✅ Redirection dans un useEffect — jamais pendant le render
+  // Pas le choix que d'utiliser useEffet car react router 7 inclut SSR et cause problème avec navigate() appelé directement dans le render
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login", { replace: true, state: { from: location } });

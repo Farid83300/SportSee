@@ -1,6 +1,6 @@
 // =============================================================================
 // SPORTSEE — Hook useUserActivity
-// Récupère l'activité utilisateur via le service API
+// Adapte les données chargées selon la page : "dashboard" ou "profile"
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
@@ -32,17 +32,18 @@ export function useUserActivity(mode: ActivityMode): UseUserActivityResult {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // [mode] en dépendance → se relance si on change de page
   useEffect(() => {
     async function load() {
       setIsLoading(true);
       setError(null);
 
       try {
-        // Genre étendu — toujours chargé
+        // Genre absent de l'API → toujours mocké, pas de requête réseau
         setGender(fetchProfileExtendedGender());
 
         if (mode === "dashboard") {
-          // Dashboard — semaine courante + 4 dernières semaines
+          // Promise.all lance les deux requêtes en parallèle
           const [week, last4] = await Promise.all([
             fetchWeekActivity(),
             fetchLast4WeeksActivity(),
@@ -50,7 +51,6 @@ export function useUserActivity(mode: ActivityMode): UseUserActivityResult {
           setWeekActivity(week);
           setLast4WeeksActivity(last4);
         } else {
-          // Profil — toute l'activité annuelle
           const all = await fetchAllActivity();
           setAllActivity(all);
         }

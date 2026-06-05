@@ -23,9 +23,6 @@ import KmChart from "../components/charts/KmChart";
 import BpmChart from "../components/charts/BpmChart";
 import WeeklyPieChart from "../components/charts/WeeklyPieChart";
 
-// ---------------------------------------------------------------------------
-// Helper
-// ---------------------------------------------------------------------------
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("fr-FR");
 }
@@ -33,23 +30,18 @@ function formatDate(dateStr: string): string {
 export default function DashboardPage() {
   const { userInfo, isLoading: infoLoading, error: infoError } = useAppContext();
 
-  // ---------------------------------------------------------------------------
-  // États de navigation
-  // 0 = période courante, -1 = période précédente, etc.
-  // ---------------------------------------------------------------------------
   const [kmOffset, setKmOffset] = useState(0);
   const [bpmOffset, setBpmOffset] = useState(0);
 
-  // ---------------------------------------------------------------------------
-  // Données d'activité
-  // ---------------------------------------------------------------------------
   const [weekActivity, setWeekActivity] = useState<UserActivity>([]);
   const [last4Activity, setLast4Activity] = useState<UserActivity>([]);
   const [currentWeekActivity, setCurrentWeekActivity] = useState<UserActivity>([]);
-  const [activityLoading, setActivityLoading] = useState(true);
+
+  // Chargement initial séparé du chargement de navigation
+  const [initialLoading, setInitialLoading] = useState(true);
   const [activityError, setActivityError] = useState<string | null>(null);
 
-  // Semaine courante — toujours offset 0 (pie chart + stats)
+  // Semaine courante — offset 0, chargement initial uniquement
   useEffect(() => {
     async function loadCurrentWeek() {
       try {
@@ -60,10 +52,14 @@ export default function DashboardPage() {
     loadCurrentWeek();
   }, []);
 
-  // BPM — rechargé à chaque changement d'offset
+  // BPM — chargement initial + navigation sans rechargement de page
   useEffect(() => {
     async function loadBpm() {
-      setActivityLoading(true);
+      // Chargement initial → affiche le spinner global
+      // Navigation (offset !== 0 ou changement) → silencieux
+      if (bpmOffset === 0 && weekActivity.length === 0) {
+        setInitialLoading(true);
+      }
       setActivityError(null);
       try {
         const data = await fetchWeekActivity(bpmOffset);
@@ -71,13 +67,13 @@ export default function DashboardPage() {
       } catch (err) {
         setActivityError(err instanceof Error ? err.message : "Erreur inconnue");
       } finally {
-        setActivityLoading(false);
+        setInitialLoading(false);
       }
     }
     loadBpm();
   }, [bpmOffset]);
 
-  // Km — rechargé à chaque changement d'offset
+  // Km — navigation silencieuse
   useEffect(() => {
     async function loadKm() {
       try {
@@ -90,10 +86,7 @@ export default function DashboardPage() {
     loadKm();
   }, [kmOffset]);
 
-  // ---------------------------------------------------------------------------
-  // États de chargement et d'erreur
-  // ---------------------------------------------------------------------------
-  if (infoLoading || activityLoading) {
+  if (infoLoading || initialLoading) {
     return <div className="loading">Chargement...</div>;
   }
 
@@ -107,9 +100,6 @@ export default function DashboardPage() {
 
   if (!userInfo) return null;
 
-  // ---------------------------------------------------------------------------
-  // Données calculées
-  // ---------------------------------------------------------------------------
   const weeklyStats = computeWeeklyStats(currentWeekActivity);
   const kmByWeek = groupByWeek(last4Activity);
 
@@ -130,7 +120,6 @@ export default function DashboardPage() {
   return (
     <div>
 
-      {/* ── Header profil — composant ── */}
       <DashboardHeader
         firstName={userInfo.profile.firstName}
         lastName={userInfo.profile.lastName}
@@ -139,7 +128,6 @@ export default function DashboardPage() {
         totalDistance={userInfo.statistics.totalDistance}
       />
 
-      {/* ── Section graphiques ── */}
       <h2 style={{ marginBottom: "1.25rem" }}>Vos dernières performances</h2>
 
       <div className="charts-grid">
@@ -152,17 +140,13 @@ export default function DashboardPage() {
               <p className="card-subtitle">Total des kilomètres 4 dernières semaines</p>
             </div>
             <div className="chart-nav">
-              <button onClick={() => setKmOffset((o) => o - 1)} aria-label="Période précédente">
-                ‹
-              </button>
+              <button onClick={() => setKmOffset((o) => o - 1)} aria-label="Période précédente">‹</button>
               <span>{kmLabel}</span>
               <button
                 onClick={() => setKmOffset((o) => Math.min(o + 1, 0))}
                 disabled={kmOffset === 0}
                 aria-label="Période suivante"
-              >
-                ›
-              </button>
+              >›</button>
             </div>
           </div>
           <KmChart data={kmByWeek} />
@@ -182,17 +166,13 @@ export default function DashboardPage() {
               <p className="card-subtitle">Fréquence cardiaque moyenne</p>
             </div>
             <div className="chart-nav">
-              <button onClick={() => setBpmOffset((o) => o - 1)} aria-label="Semaine précédente">
-                ‹
-              </button>
+              <button onClick={() => setBpmOffset((o) => o - 1)} aria-label="Semaine précédente">‹</button>
               <span>{bpmLabel}</span>
               <button
                 onClick={() => setBpmOffset((o) => Math.min(o + 1, 0))}
                 disabled={bpmOffset === 0}
                 aria-label="Semaine suivante"
-              >
-                ›
-              </button>
+              >›</button>
             </div>
           </div>
           <BpmChart data={weekActivity} />
@@ -214,7 +194,6 @@ export default function DashboardPage() {
 
       </div>
 
-      {/* ── Section Cette semaine ── */}
       <p className="week-section-title">Cette semaine</p>
       <p className="week-section-dates">{weekLabel}</p>
 
