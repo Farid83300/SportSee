@@ -242,9 +242,12 @@ export async function fetchAllActivity(createdAt: string = "2025-01-01"): Promis
 }
 
 // ---------------------------------------------------------------------------
-// Helper — genre étendu (absent de l'API → mocké)
+// Helper — détermine le genre depuis l'URL de la photo de profil
+// Gender absent de l'API → déduit depuis le nom du fichier image
 // ---------------------------------------------------------------------------
-export function fetchProfileExtendedGender(): string {
-  const userId = getUserId() ?? "user123";
-  return getMockUser(userId).profileExtended.gender;
+export function inferGenderFromPicture(profilePicture: string): string {
+  if (/sophie|emma|marie|julie|sarah|laura|alice|camille/i.test(profilePicture)) {
+    return "female";
+  }
+  return "male"; // fallback par défaut
 }

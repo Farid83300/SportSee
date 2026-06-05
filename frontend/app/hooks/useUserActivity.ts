@@ -9,7 +9,6 @@ import {
   fetchWeekActivity,
   fetchLast4WeeksActivity,
   fetchAllActivity,
-  fetchProfileExtendedGender,
 } from "../services/apiService";
 import type { UserActivity } from "../data/mockData";
 
@@ -19,19 +18,17 @@ export interface UseUserActivityResult {
   weekActivity: UserActivity;
   last4WeeksActivity: UserActivity;
   allActivity: UserActivity;
-  gender: string;
   isLoading: boolean;
   error: string | null;
 }
 
 export function useUserActivity(
   mode: ActivityMode,
-  createdAt?: string  // date de création du compte — utilisée en mode profil
+  createdAt?: string
 ): UseUserActivityResult {
   const [weekActivity, setWeekActivity] = useState<UserActivity>([]);
   const [last4WeeksActivity, setLast4WeeksActivity] = useState<UserActivity>([]);
   const [allActivity, setAllActivity] = useState<UserActivity>([]);
-  const [gender, setGender] = useState<string>("female");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,9 +39,6 @@ export function useUserActivity(
       setError(null);
 
       try {
-        // Genre absent de l'API → toujours mocké, pas de requête réseau
-        setGender(fetchProfileExtendedGender());
-
         if (mode === "dashboard") {
           // Promise.all lance les deux requêtes en parallèle
           const [week, last4] = await Promise.all([
@@ -68,5 +62,5 @@ export function useUserActivity(
     load();
   }, [mode, createdAt]);
 
-  return { weekActivity, last4WeeksActivity, allActivity, gender, isLoading, error };
+  return { weekActivity, last4WeeksActivity, allActivity, isLoading, error };
 }

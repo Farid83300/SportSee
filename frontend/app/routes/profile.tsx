@@ -6,6 +6,7 @@
 
 import { useAppContext } from "../context/useAppContext";
 import { useUserActivity } from "../hooks/useUserActivity";
+import { inferGenderFromPicture } from "../services/apiService";
 import { computeAllTimeStats, formatDuration } from "../data/mockData";
 import ProfileCard from "../components/ProfileCard/ProfileCard";
 import ProfileInfoCard from "../components/ProfileInfoCard/ProfileInfoCard";
@@ -20,10 +21,8 @@ function formatDateLong(dateStr: string): string {
 export default function ProfilePage() {
   const { userInfo, isLoading: infoLoading, error: infoError } = useAppContext();
 
-  // Passe createdAt au hook — les dates de l'API sont calculées dynamiquement
   const {
     allActivity,
-    gender,
     isLoading: activityLoading,
     error: activityError,
   } = useUserActivity("profile", userInfo?.profile.createdAt);
@@ -41,6 +40,9 @@ export default function ProfilePage() {
   }
 
   if (!userInfo) return null;
+
+  // Genre déduit depuis l'URL de la photo de profil
+  const gender = inferGenderFromPicture(userInfo.profile.profilePicture);
 
   const computedStats = computeAllTimeStats(allActivity, userInfo.profile.createdAt);
   const totalDurationFormatted = formatDuration(
@@ -79,10 +81,7 @@ export default function ProfilePage() {
         </p>
 
         <div className="stats-grid">
-          <StatCard
-            label="Temps total couru"
-            value={totalDurationFormatted}
-          />
+          <StatCard label="Temps total couru" value={totalDurationFormatted} />
           <StatCard
             label="Calories brûlées"
             value={computedStats.totalCaloriesBurned.toLocaleString("fr-FR")}

@@ -1,6 +1,7 @@
 // =============================================================================
 // SPORTSEE — Composant AnimatedLogo
 // Logo avec barres animées montant/descendant en boucle
+// Les styles d'animation sont dans app.css (.bar-pair, .bar-1 → .bar-5)
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
@@ -16,21 +17,6 @@ export default function AnimatedLogo({ height = 23 }: { height?: number }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-label="SportSee logo"
     >
-      <style>{`
-        @keyframes barPulse {
-          0%, 100% { transform: scaleY(1); }
-          50%       { transform: scaleY(0.4); }
-        }
-
-        .bar-pair { transform-box: fill-box; transform-origin: center; }
-
-        .bar-1 { animation: barPulse 1.2s ease-in-out infinite; animation-delay: 0s;    }
-        .bar-2 { animation: barPulse 1.2s ease-in-out infinite; animation-delay: 0.15s; }
-        .bar-3 { animation: barPulse 1.2s ease-in-out infinite; animation-delay: 0.3s;  }
-        .bar-4 { animation: barPulse 1.2s ease-in-out infinite; animation-delay: 0.45s; }
-        .bar-5 { animation: barPulse 1.2s ease-in-out infinite; animation-delay: 0.6s;  }
-      `}</style>
-
       <defs>
         <linearGradient id="g0" x1="5.5" y1="5.656" x2="5.5" y2="20.656" gradientUnits="userSpaceOnUse">
           <stop stopColor="#F4320B"/>
