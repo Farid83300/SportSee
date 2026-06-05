@@ -6,6 +6,7 @@
 
 import { NavLink, useNavigate } from "react-router";
 import { clearAuth } from "../../auth/authCookie";
+import { clearCache } from "../../services/apiService";
 import AnimatedLogo from "../AnimatedLogo/AnimatedLogo";
 
 export default function Navbar() {
@@ -13,6 +14,7 @@ export default function Navbar() {
 
   function handleLogout() {
     clearAuth();
+    clearCache(); // ← vide le cache à la déconnexion
     navigate("/login", { replace: true });
   }
 

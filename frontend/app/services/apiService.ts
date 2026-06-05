@@ -2,6 +2,7 @@
 // SPORTSEE — Service API centralisé
 // Tous les appels réseau passent par ici
 // Switch USE_MOCK transparent pour les composants
+// Cache en mémoire — idempotence : un seul appel API par clé de données
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
@@ -15,6 +16,18 @@ import { getToken, getUserId } from "../auth/authCookie";
 
 // ⚠️ À déplacer dans un fichier .env
 const API_URL = "http://localhost:8000";
+
+// ---------------------------------------------------------------------------
+// Cache en mémoire — idempotence
+// Clé = identifiant unique de la requête (ex: "userInfo", "week:0", "4weeks:-1")
+// Valeur = données déjà chargées
+// Vidé à la déconnexion via clearCache()
+// ---------------------------------------------------------------------------
+const cache = new Map<string, unknown>();
+
+export function clearCache(): void {
+  cache.clear();
+}
 
 // ---------------------------------------------------------------------------
 // Helper interne — headers d'authentification
@@ -93,12 +106,21 @@ export function getLast4WeeksRangeWithOffset(offset: number = 0): {
 
 // ---------------------------------------------------------------------------
 // GET /api/user-info
+// Idempotent — un seul appel par session
 // ---------------------------------------------------------------------------
 export async function fetchUserInfo(): Promise<UserInfo> {
+  const cacheKey = "userInfo";
+
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey) as UserInfo;
+  }
+
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 300));
     const userId = getUserId() ?? "user123";
-    return getMockUser(userId).userInfo;
+    const data = getMockUser(userId).userInfo;
+    cache.set(cacheKey, data);
+    return data;
   }
 
   const response = await fetch(`${API_URL}/api/user-info`, {
@@ -109,18 +131,28 @@ export async function fetchUserInfo(): Promise<UserInfo> {
     throw new Error(`Erreur ${response.status} — impossible de récupérer les infos utilisateur`);
   }
 
-  return response.json();
+  const data = await response.json();
+  cache.set(cacheKey, data);
+  return data;
 }
 
 // ---------------------------------------------------------------------------
 // GET /api/user-activity — semaine avec offset
+// Idempotent — une clé par offset
 // ---------------------------------------------------------------------------
 export async function fetchWeekActivity(offset: number = 0): Promise<UserActivity> {
+  const cacheKey = `week:${offset}`;
+
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey) as UserActivity;
+  }
+
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
     const userId = getUserId() ?? "user123";
-    // En mock, on retourne toujours la même semaine (offset ignoré)
-    return getMockUser(userId).weekActivity;
+    const data = getMockUser(userId).weekActivity;
+    cache.set(cacheKey, data);
+    return data;
   }
 
   const { startWeek, endWeek } = getWeekRangeWithOffset(offset);
@@ -133,17 +165,28 @@ export async function fetchWeekActivity(offset: number = 0): Promise<UserActivit
     throw new Error(`Erreur ${response.status} — impossible de récupérer l'activité de la semaine`);
   }
 
-  return response.json();
+  const data = await response.json();
+  cache.set(cacheKey, data);
+  return data;
 }
 
 // ---------------------------------------------------------------------------
 // GET /api/user-activity — 4 semaines avec offset
+// Idempotent — une clé par offset
 // ---------------------------------------------------------------------------
 export async function fetchLast4WeeksActivity(offset: number = 0): Promise<UserActivity> {
+  const cacheKey = `4weeks:${offset}`;
+
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey) as UserActivity;
+  }
+
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
     const userId = getUserId() ?? "user123";
-    return getMockUser(userId).last4WeeksActivity;
+    const data = getMockUser(userId).last4WeeksActivity;
+    cache.set(cacheKey, data);
+    return data;
   }
 
   const { startWeek, endWeek } = getLast4WeeksRangeWithOffset(offset);
@@ -156,22 +199,31 @@ export async function fetchLast4WeeksActivity(offset: number = 0): Promise<UserA
     throw new Error(`Erreur ${response.status} — impossible de récupérer l'activité des 4 semaines`);
   }
 
-  return response.json();
+  const data = await response.json();
+  cache.set(cacheKey, data);
+  return data;
 }
 
 // ---------------------------------------------------------------------------
 // GET /api/user-activity — toute l'année (page profil)
+// Idempotent — une seule clé
 // ---------------------------------------------------------------------------
 export async function fetchAllActivity(): Promise<UserActivity> {
+  const cacheKey = "allActivity";
+
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey) as UserActivity;
+  }
+
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 200));
     const userId = getUserId() ?? "user123";
-    return getMockUser(userId).allActivity;
+    const data = getMockUser(userId).allActivity;
+    cache.set(cacheKey, data);
+    return data;
   }
 
   const response = await fetch(
-    // revoir les dates en dur pour éviter les problèmes de date côté serveur (mocké dans ce cas)
-    // endweek date du jour et startweek date a laquelle le compte a ete cree
     `${API_URL}/api/user-activity?startWeek=2025-01-01&endWeek=2025-12-31`,
     { headers: authHeaders() }
   );
@@ -180,7 +232,9 @@ export async function fetchAllActivity(): Promise<UserActivity> {
     throw new Error(`Erreur ${response.status} — impossible de récupérer toute l'activité`);
   }
 
-  return response.json();
+  const data = await response.json();
+  cache.set(cacheKey, data);
+  return data;
 }
 
 // ---------------------------------------------------------------------------
