@@ -19,12 +19,14 @@ function formatDateLong(dateStr: string): string {
 
 export default function ProfilePage() {
   const { userInfo, isLoading: infoLoading, error: infoError } = useAppContext();
+
+  // Passe createdAt au hook — les dates de l'API sont calculées dynamiquement
   const {
     allActivity,
     gender,
     isLoading: activityLoading,
     error: activityError,
-  } = useUserActivity("profile");
+  } = useUserActivity("profile", userInfo?.profile.createdAt);
 
   if (infoLoading || activityLoading) {
     return <div className="loading">Chargement...</div>;

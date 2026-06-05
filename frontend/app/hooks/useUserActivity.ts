@@ -24,7 +24,10 @@ export interface UseUserActivityResult {
   error: string | null;
 }
 
-export function useUserActivity(mode: ActivityMode): UseUserActivityResult {
+export function useUserActivity(
+  mode: ActivityMode,
+  createdAt?: string  // date de création du compte — utilisée en mode profil
+): UseUserActivityResult {
   const [weekActivity, setWeekActivity] = useState<UserActivity>([]);
   const [last4WeeksActivity, setLast4WeeksActivity] = useState<UserActivity>([]);
   const [allActivity, setAllActivity] = useState<UserActivity>([]);
@@ -32,7 +35,7 @@ export function useUserActivity(mode: ActivityMode): UseUserActivityResult {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // [mode] en dépendance → se relance si on change de page
+  // [mode, createdAt] en dépendances → se relance si l'un des deux change
   useEffect(() => {
     async function load() {
       setIsLoading(true);
@@ -51,7 +54,8 @@ export function useUserActivity(mode: ActivityMode): UseUserActivityResult {
           setWeekActivity(week);
           setLast4WeeksActivity(last4);
         } else {
-          const all = await fetchAllActivity();
+          // Passe createdAt au service — dates dynamiques, plus de dates en dur
+          const all = await fetchAllActivity(createdAt);
           setAllActivity(all);
         }
       } catch (err) {
@@ -62,7 +66,7 @@ export function useUserActivity(mode: ActivityMode): UseUserActivityResult {
     }
 
     load();
-  }, [mode]);
+  }, [mode, createdAt]);
 
   return { weekActivity, last4WeeksActivity, allActivity, gender, isLoading, error };
 }

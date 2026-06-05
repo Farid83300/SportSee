@@ -205,10 +205,11 @@ export async function fetchLast4WeeksActivity(offset: number = 0): Promise<UserA
 }
 
 // ---------------------------------------------------------------------------
-// GET /api/user-activity — toute l'année (page profil)
+// GET /api/user-activity — depuis la création du compte jusqu'à aujourd'hui
+// startWeek = createdAt de l'utilisateur, endWeek = date du jour
 // Idempotent — une seule clé
 // ---------------------------------------------------------------------------
-export async function fetchAllActivity(): Promise<UserActivity> {
+export async function fetchAllActivity(createdAt: string = "2025-01-01"): Promise<UserActivity> {
   const cacheKey = "allActivity";
 
   if (cache.has(cacheKey)) {
@@ -223,8 +224,11 @@ export async function fetchAllActivity(): Promise<UserActivity> {
     return data;
   }
 
+  // Date de fin = aujourd'hui dynamiquement
+  const endWeek = new Date().toISOString().split("T")[0];
+
   const response = await fetch(
-    `${API_URL}/api/user-activity?startWeek=2025-01-01&endWeek=2025-12-31`,
+    `${API_URL}/api/user-activity?startWeek=${createdAt}&endWeek=${endWeek}`,
     { headers: authHeaders() }
   );
 
