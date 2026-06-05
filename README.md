@@ -20,7 +20,7 @@ SportSee est conçu pour aider les utilisateurs à suivre leurs progrès en mati
 
 ## Technologies
 - TypeScript
-- SASS
+- Tailwind CSS
 - React / Vite
 - React Router
 - Recharts
@@ -55,11 +55,11 @@ Pour démarrer le serveur Frontend, exécutez la commande suivante :
 ```bash
 npm run dev
 ```
-Ouvrez votre navigateur et accédez à http://localhost:5173 pour voir l'application.
 
 ### Démarrer le serveur Backend
 Pour démarrer le serveur Backend, exécutez :
 ```bash
 npm run start
 ```
-Ouvrez votre navigateur et accédez à `http://localhost:3000` pour voir l'application.
+
+Ouvrez votre navigateur et accédez à http://localhost:5173 pour voir l'application.
