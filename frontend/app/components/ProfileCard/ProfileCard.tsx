@@ -25,14 +25,16 @@ export default function ProfileCard({
 }: ProfileCardProps) {
   return (
     <div className="profile-card">
-      <img
-        src={profilePicture}
-        alt={`${firstName} ${lastName}`}
-        className="profile-card-avatar"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = "/images/default-avatar.png";
-        }}
-      />
+      <div className="avatar-wrapper avatar-wrapper--large">
+        <img
+          src={profilePicture}
+          alt={`${firstName} ${lastName}`}
+          className="profile-card-avatar"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "/images/default-avatar.png";
+          }}
+        />
+      </div>
       <p className="profile-card-name">
         {firstName} {lastName}
       </p>

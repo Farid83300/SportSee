@@ -14,8 +14,7 @@ import {
 } from "../data/mockData";
 import { getToken, getUserId } from "../auth/authCookie";
 
-// ⚠️ À déplacer dans un fichier .env
-const API_URL = "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL as string;
 
 // ---------------------------------------------------------------------------
 // Cache en mémoire — idempotence
@@ -107,6 +106,7 @@ export function getLast4WeeksRangeWithOffset(offset: number = 0): {
 // ---------------------------------------------------------------------------
 // GET /api/user-info
 // Idempotent — un seul appel par session
+// Note : weeklyGoal absent de l'API backend — fallback frontend appliqué
 // ---------------------------------------------------------------------------
 export async function fetchUserInfo(): Promise<UserInfo> {
   const cacheKey = "userInfo";
@@ -132,6 +132,11 @@ export async function fetchUserInfo(): Promise<UserInfo> {
   }
 
   const data = await response.json();
+
+  // weeklyGoal absent de l'API backend (non implémenté côté serveur)
+  // Fallback frontend : valeur par défaut à 5 séances par semaine
+  data.weeklyGoal = data.weeklyGoal ?? 5;
+
   cache.set(cacheKey, data);
   return data;
 }

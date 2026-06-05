@@ -30,14 +30,16 @@ export default function DashboardHeader({
 
       {/* Identité */}
       <div className="profile-header-left">
-        <img
-          src={profilePicture}
-          alt={`${firstName} ${lastName}`}
-          className="profile-avatar"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = "/images/default-avatar.png";
-          }}
-        />
+        <div className="avatar-wrapper">
+          <img
+            src={profilePicture}
+            alt={`${firstName} ${lastName}`}
+            className="profile-avatar"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/images/default-avatar.png";
+            }}
+          />
+        </div>
         <div>
           <p className="profile-name">
             {firstName} {lastName}
