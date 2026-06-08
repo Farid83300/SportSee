@@ -1,10 +1,12 @@
 // =============================================================================
 // SPORTSEE — Page Dashboard
 // Avec navigation par offset sur les graphiques Km et BPM
+// Offsets persistés dans l'URL via query params (React Router v7)
 // Auteur : Farid Zaffalone — OpenClassrooms Projet 6
 // =============================================================================
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router";
 import { useAppContext } from "../context/useAppContext";
 import {
   computeWeeklyStats,
@@ -18,6 +20,7 @@ import {
   getWeekRangeWithOffset,
   getLast4WeeksRangeWithOffset,
 } from "../services/apiService";
+import { useState } from "react";
 import DashboardHeader from "../components/DashboardHeader/DashboardHeader";
 import KmChart from "../components/charts/KmChart";
 import BpmChart from "../components/charts/BpmChart";
@@ -30,16 +33,41 @@ function formatDate(dateStr: string): string {
 export default function DashboardPage() {
   const { userInfo, isLoading: infoLoading, error: infoError } = useAppContext();
 
-  const [kmOffset, setKmOffset] = useState(0);
-  const [bpmOffset, setBpmOffset] = useState(0);
+  // ---------------------------------------------------------------------------
+  // Query params — persistance des offsets dans l'URL
+  // Ex: /?kmOffset=-2&bpmOffset=-1
+  // ---------------------------------------------------------------------------
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [weekActivity, setWeekActivity] = useState<UserActivity>([]);
-  const [last4Activity, setLast4Activity] = useState<UserActivity>([]);
+  const kmOffset  = parseInt(searchParams.get("kmOffset")  ?? "0");
+  const bpmOffset = parseInt(searchParams.get("bpmOffset") ?? "0");
+
+  function setKmOffset(updater: (prev: number) => number) {
+    const next = updater(kmOffset);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.set("kmOffset", String(next));
+      return p;
+    });
+  }
+
+  function setBpmOffset(updater: (prev: number) => number) {
+    const next = updater(bpmOffset);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.set("bpmOffset", String(next));
+      return p;
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // State local — données d'activité
+  // ---------------------------------------------------------------------------
+  const [weekActivity,        setWeekActivity]        = useState<UserActivity>([]);
+  const [last4Activity,       setLast4Activity]       = useState<UserActivity>([]);
   const [currentWeekActivity, setCurrentWeekActivity] = useState<UserActivity>([]);
-
-  // Chargement initial séparé du chargement de navigation
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [activityError, setActivityError] = useState<string | null>(null);
+  const [initialLoading,      setInitialLoading]      = useState(true);
+  const [activityError,       setActivityError]       = useState<string | null>(null);
 
   // Semaine courante — offset 0, chargement initial uniquement
   useEffect(() => {
@@ -52,11 +80,9 @@ export default function DashboardPage() {
     loadCurrentWeek();
   }, []);
 
-  // BPM — chargement initial + navigation sans rechargement de page
+  // BPM — se recharge à chaque changement d'offset (y compris depuis l'URL)
   useEffect(() => {
     async function loadBpm() {
-      // Chargement initial → affiche le spinner global
-      // Navigation (offset !== 0 ou changement) → silencieux
       if (bpmOffset === 0 && weekActivity.length === 0) {
         setInitialLoading(true);
       }
@@ -73,7 +99,7 @@ export default function DashboardPage() {
     loadBpm();
   }, [bpmOffset]);
 
-  // Km — navigation silencieuse
+  // Km — se recharge à chaque changement d'offset (y compris depuis l'URL)
   useEffect(() => {
     async function loadKm() {
       try {
@@ -101,9 +127,9 @@ export default function DashboardPage() {
   if (!userInfo) return null;
 
   const weeklyStats = computeWeeklyStats(currentWeekActivity);
-  const kmByWeek = groupByWeek(last4Activity);
+  const kmByWeek    = groupByWeek(last4Activity);
 
-  const { label: kmLabel } = getLast4WeeksRangeWithOffset(kmOffset);
+  const { label: kmLabel  } = getLast4WeeksRangeWithOffset(kmOffset);
   const { label: bpmLabel } = getWeekRangeWithOffset(bpmOffset);
 
   const { startWeek, endWeek } = getWeekRange();
