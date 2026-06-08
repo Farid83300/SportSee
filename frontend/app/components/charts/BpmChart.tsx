@@ -40,6 +40,22 @@ export default function BpmChart({ data }: BpmChartProps) {
     };
   });
 
+  // ---------------------------------------------------------------------------
+  // Calcul du domaine Y stable — basé sur toutes les valeurs non nulles
+  // Arrondi à la dizaine pour éviter les sauts d'axe entre semaines
+  // ---------------------------------------------------------------------------
+  const allValues = chartData.flatMap((d) =>
+    [d.min, d.max].filter((v): v is number => v !== null)
+  );
+
+  const yMin = allValues.length > 0
+    ? Math.floor(Math.min(...allValues) / 10) * 10
+    : 100; // fallback si semaine vide
+
+  const yMax = allValues.length > 0
+    ? Math.ceil(Math.max(...allValues) / 10) * 10
+    : 200; // fallback si semaine vide
+
   return (
     <ResponsiveContainer width="100%" height={220}>
       <ComposedChart
@@ -60,7 +76,7 @@ export default function BpmChart({ data }: BpmChartProps) {
           axisLine={false}
           tickLine={false}
           tick={{ fontSize: 12, fill: "var(--color-text-muted)" }}
-          domain={["auto", "auto"]}
+          domain={[yMin, yMax]}
         />
         <Tooltip
           cursor={false}
