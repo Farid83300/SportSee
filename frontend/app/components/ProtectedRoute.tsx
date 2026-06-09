@@ -3,29 +3,18 @@
 // Redirige vers /login si l'utilisateur n'est pas authentifié
 // =============================================================================
 
-// app/components/ProtectedRoute.tsx
-import { Outlet, useLocation, useNavigate } from "react-router";
-import { useEffect } from "react";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { isAuthenticated } from "../auth/authCookie";
 import Navbar from "./Navbar/Navbar";
 import Footer from "./Footer/Footer";
 
 export default function ProtectedRoute() {
-  // ✅ Tous les hooks appelés en premier, sans exception
   const location = useLocation();
-  const navigate = useNavigate();
 
-  // ✅ Redirection dans un useEffect — jamais pendant le render
-  // Pas le choix que d'utiliser useEffet car react router 7 inclut SSR et cause problème avec navigate() appelé directement dans le render
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login", { replace: true, state: { from: location } });
-    }
-  }, []);
-
-  // Si non authentifié, on ne rend rien le temps que useEffect s'exécute
+  // Redirection immédiate si non authentifié — <Navigate> est déclaratif,
+  // pas besoin de useEffect contrairement à navigate()
   if (!isAuthenticated()) {
-    return null;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   const isProfile = location.pathname === "/profile";
