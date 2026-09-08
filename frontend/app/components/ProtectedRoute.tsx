@@ -5,6 +5,7 @@
 
 
 import { isAuthenticated } from "../auth/authCookie";
+import { USE_MOCK } from "../data/mockData";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { useEffect } from "react";
 import Navbar from "./Navbar/Navbar";
@@ -15,8 +16,9 @@ export default function ProtectedRoute() {
   const navigate = useNavigate();
 
   // Redirection immédiate si non authentifié — <Navigate> est déclaratif,
+  // En mode mock (démo publique), la page d'accueil reste accessible sans connexion
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!isAuthenticated() && !USE_MOCK) {
       navigate("/login", { replace: true, state: { from: location } });
     }
   }, []);

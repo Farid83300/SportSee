@@ -440,7 +440,7 @@ export function getMockUser(userId: string): MockUser {
 // SWITCH — mock / API réelle
 // ---------------------------------------------------------------------------
 
-export const USE_MOCK = false;
+export const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 
 export const MOCK_DATA = {
   users: MOCK_USERS,
