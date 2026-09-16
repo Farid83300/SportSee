@@ -761,7 +761,7 @@ a:hover {
 .footer {
   height: 40px;
   background-color: var(--color-bg-card);
-  padding: 1.25rem max(15px, calc((100% - 1600px) / 2 + 2rem));
+  padding: 1.25rem max(15px, calc((100% - 1300px) / 2 + 2rem));
   display: flex;
   justify-content: space-between;
   align-items: center;
