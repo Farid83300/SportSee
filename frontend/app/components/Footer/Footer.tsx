@@ -10,15 +10,17 @@ export default function Footer() {
   return (
     <footer className="footer">
 
-      {/* Copyright */}
-      <span>©Sportsee Tous droits réservés</span>
-
-      {/* Liens + logo animé */}
-      <div className="footer-links">
-        <a href="#">Conditions générales</a>
-        <a href="#">Contact</a>
-        <AnimatedLogo height={20} />
+      {/* Copyright + liens — groupe de gauche */}
+      <div className="footer-left">
+        <span>©Sportsee Tous droits réservés</span>
+        <div className="footer-links">
+          <a href="#">Conditions générales</a>
+          <a href="#">Contact</a>
+        </div>
       </div>
+
+      {/* Logo animé — toujours à droite */}
+      <AnimatedLogo height={20} />
 
     </footer>
   );

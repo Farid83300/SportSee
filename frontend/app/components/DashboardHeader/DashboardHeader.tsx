@@ -36,7 +36,7 @@ export default function DashboardHeader({
             alt={`${firstName} ${lastName}`}
             className="profile-avatar"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "/images/default-avatar.png";
+              (e.target as HTMLImageElement).src = "/images/avatar.png";
             }}
           />
         </div>
@@ -51,7 +51,7 @@ export default function DashboardHeader({
       </div>
 
       {/* Distance totale */}
-      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+      <div className="profile-header-right">
         <p className="profile-stat-label">Distance totale parcourue</p>
         <div className="profile-stat-value">
           <img src="/icons/running.svg" alt="" style={{ width: "28px", height: "28px" }} />

@@ -31,7 +31,7 @@ export default function ProfileCard({
           alt={`${firstName} ${lastName}`}
           className="profile-card-avatar"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = "/images/default-avatar.png";
+            (e.target as HTMLImageElement).src = "/images/avatar.png";
           }}
         />
       </div>

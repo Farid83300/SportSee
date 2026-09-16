@@ -95,13 +95,13 @@ export default function WeeklyPieChart({ done, total }: WeeklyPieChartProps) {
         </ResponsiveContainer>
 
         {/* Légende "réalisées" — bas gauche du donut */}
-        <span style={{ ...labelStyle, bottom: -24, left: 5 }}>
+        <span className="pie-legend pie-legend--done" style={{ ...labelStyle, bottom: -24, left: 5 }}>
           <span style={dotStyle("var(--color-pie-done)")} />
           {safeDone} réalisées
         </span>
 
         {/* Légende "restants" — haut droite du donut */}
-        <span style={{ ...labelStyle, top: 24, right: -80 }}>
+        <span className="pie-legend pie-legend--remaining" style={{ ...labelStyle, top: 24, right: -80 }}>
           <span style={dotStyle("var(--color-pie-remaining)")} />
           {remaining} restants
         </span>

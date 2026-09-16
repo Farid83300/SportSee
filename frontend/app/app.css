@@ -420,6 +420,12 @@ a:hover {
   gap: 1.25rem;
 }
 
+.profile-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .profile-avatar {
   width: 80px;
   height: 80px;
@@ -765,6 +771,12 @@ a:hover {
   min-width: 1024px;
 }
 
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .footer-links {
   display: flex;
   gap: 1.5rem;
@@ -924,4 +936,332 @@ a:hover {
 
 .avatar-wrapper:hover img {
   transform: scale(1.3);      /* ← grossit de 30% au survol */
+}
+
+/* ============================================================================
+   RESPONSIVE — Tablette & Mobile
+   Le bloc ci-dessus reste la référence desktop (≥1024px), inchangée.
+   Ces media queries relâchent uniquement les contraintes de largeur fixe
+   (min-width, grid 2 colonnes, largeurs figées) pour les petits écrans.
+   ============================================================================ */
+
+/* ---------- Tablette : jusqu'à 1023px ---------- */
+@media (max-width: 1023px) {
+
+  html, body, #root {
+    min-width: 0;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .app-main {
+    min-width: 0;
+    max-width: 100%;
+    padding: 1.5rem 1.25rem 3rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Navbar */
+  .navbar {
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+    padding: 0 1.25rem;
+    margin-top: 1.25rem;
+  }
+
+  .navbar-nav {
+    width: 100%;
+    order: 2;
+    gap: 1.25rem;
+    padding: 0 1.25rem;
+  }
+
+  /* Footer — logo à droite, copyright + liens à gauche (comme le desktop) */
+  .footer {
+    min-width: 0;
+    height: auto;
+    padding: 1.25rem;
+  }
+
+  /* Login */
+  .login-page {
+    min-width: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .login-left {
+    padding: 5.5rem 1.5rem 2.5rem;
+  }
+
+  .login-logo {
+    left: 1.5rem;
+  }
+
+  .login-right {
+    height: 320px;
+  }
+
+  .login-right-caption {
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  /* Dashboard header — bouton km à droite, aligné avec la photo, label en dessous */
+  .profile-header {
+    flex-wrap: nowrap;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .profile-header-right {
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  /* Bouton km légèrement plus compact en tablette/mobile */
+  .profile-stat-value {
+    padding: 0.85rem 1.5rem;
+    font-size: 1.25rem;
+    min-width: 170px;
+    min-height: 58px;
+  }
+
+  /* Grilles principales — 1 colonne */
+  .charts-grid,
+  .week-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Page profil */
+  .profile-page {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Photo/nom + infos fusionnés en un seul bloc, côte à côte (format tablette) */
+  .profile-left {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .profile-card {
+    border-radius: var(--radius-card) 0 0 var(--radius-card);
+    border-right: 1px solid #F0F0F5;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .profile-info-card {
+    border-radius: 0 var(--radius-card) var(--radius-card) 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    text-align: right;
+    padding-right: 2.5rem;
+  }
+
+  .profile-page-wrapper {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    width: 100%;
+  }
+}
+
+/* ---------- Mobile : jusqu'à 639px ---------- */
+@media (max-width: 639px) {
+
+  .app-main {
+    padding: 1.25rem 1rem 2.5rem;
+    margin-top: 1rem;
+  }
+
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+
+  /* Navbar */
+  .navbar {
+    padding: 0 1rem;
+    margin-top: 1rem;
+  }
+
+  .navbar-logo span,
+  .navbar-logo img {
+    height: 18px;
+  }
+
+  .navbar-nav {
+    height: auto;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .navbar-nav a {
+    font-size: 0.85rem;
+  }
+
+  /* Login */
+  .login-left {
+    padding: 4.5rem 1.25rem 2rem;
+  }
+
+  .login-logo {
+    left: 1.25rem;
+    top: 1.25rem;
+  }
+
+  .login-card {
+    padding: 1.75rem;
+    max-width: 100%;
+  }
+
+  .login-card h1 {
+    font-size: 1.4rem;
+  }
+
+  .login-right {
+    height: 200px;
+    overflow: visible;
+  }
+
+  .login-right img {
+    height: 200px;
+  }
+
+  .login-right-caption {
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 1rem 1.25rem;
+    margin-top: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Dashboard header */
+  .profile-header {
+    flex-wrap: wrap;
+    padding: 1.25rem;
+  }
+
+  .profile-header-left {
+    width: 100%;
+  }
+
+  .profile-header-right {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-left: 0;
+    gap: 0.75rem;
+  }
+
+  .profile-stat-value {
+    min-width: 0;
+    width: 100%;
+    padding: 0.7rem 1.25rem;
+    font-size: 1.1rem;
+    min-height: 50px;
+  }
+
+  /* Cartes / graphiques */
+  .card {
+    padding: 1.25rem;
+  }
+
+  .chart-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .chart-legend {
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+  }
+
+  /* Page profil — photo/nom + infos fusionnés en un seul bloc, empilés sur mobile */
+  .profile-left {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .profile-card,
+  .profile-info-card {
+    padding: 1.5rem;
+  }
+
+  .profile-card {
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    border-right: none;
+    border-bottom: 1px solid #F0F0F5;
+    padding-bottom: 1rem;
+  }
+
+  .profile-info-card {
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+    flex: none;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    padding-top: 0.75rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Footer — sur mobile, la place manque pour rester sur une seule ligne */
+  .footer {
+    height: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .footer-left {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Pie chart — légendes rapprochées pour ne pas déborder sur petit écran */
+  .pie-legend--remaining {
+    right: -20px !important;
+  }
+
+  .pie-legend--done {
+    left: -10px !important;
+  }
+
+  .week-left {
+    align-items: center;
+    width: 100%;
+  }
+
+  /* 404 */
+  .not-found-code {
+    font-size: 4.5rem;
+  }
+
+  .not-found-title {
+    font-size: 1.5rem;
+  }
 }
